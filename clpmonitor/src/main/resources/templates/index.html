@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Monitoramento de CLPs</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <!-- <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 400px;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 40px);
+            grid-template-rows: repeat(5, 40px);
+            gap: 5px;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #aaa;
+        }
+
+        .color-0 {
+            background-color: white;
+        }
+
+        .color-1 {
+            background-color: black;
+        }
+
+        .color-2 {
+            background-color: red;
+        }
+
+        .color-3 {
+            background-color: blue;
+        }
+
+        .clp-write-section {
+            display: flex;
+            flex-direction: column;
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .clp-write-section h2 {
+            margin-bottom: 10px;
+        }
+
+        .clp-write-section form {
+            display: flex;
+            flex-direction: column;
+            /* grid-template-columns: 1fr 1fr; */
+            gap: 10px;
+        }
+
+        .clp-write-section label {
+            font-weight: bold;
+        }
+
+        .clp-write-section input,
+        .clp-write-section select,
+        .clp-write-section button {
+            padding: 5px;
+        }
+    </style> -->
+</head>
+
+<body>
+    <div class="container1">
+
+        <h1>Leitura dos 4 CLPs (Simulada)</h1>
+        
+        <h2>CLP 1 (Matriz de 28 bytes)</h2>
+        <div id="clp1-grid" class="grid"></div>
+        
+        <h2>CLP 2 a 4</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>CLP</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody id="clp-table">
+                <tr>
+                    <td>CLP 2</td>
+                    <td id="clp2">-</td>
+                </tr>
+                <tr>
+                    <td>CLP 3</td>
+                    <td id="clp3">-</td>
+                </tr>
+                <tr>
+                    <td>CLP 4</td>
+                    <td id="clp4">-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="clp4-grid"></div>
+    </div>
+
+
+    <div class="container2">
+        <div class="clp-write-section" id="clp-write-container" th:replace="fragments/formulario :: clp-write-fragment">
+            
+        </div>
+    </div>
+
+
+
+    <script>
+        const eventSource = new EventSource('/clp-data-stream');
+
+        // CLP 1 - grade 5x6
+        // registra um "ouvinte" para eventos do tipo clp1-data recebidos por 
+        // EventSource SSE (Server-Sent Events) criado anteriormente.
+        // Quando o servidor envia um evento com event.name("clp1-data"), essa função é disparada.
+        eventSource.addEventListener('clp1-data', function (event) {
+            // Os dados do evento chegam como string JSON.
+            // convertendo essa string para um objeto JavaScript.
+            // O formato do dado é:
+            // {
+            //  "clpId": 1,
+            //  "value": [0, 1, 2, 0, 3, ..., 1] // tamanho 28
+            // }
+            const data = JSON.parse(event.data);
+
+            // Se data.value já for um array, ele usa diretamente.
+            // Se data.value for uma string JSON representando um array,
+            // ele faz o JSON.parse para transformá-lo em array.
+            // Essa verificação é uma forma segura de lidar com possíveis variações no que o backend envia.
+            const byteArray = Array.isArray(data.value) ? data.value : JSON.parse(data.value);
+
+            // Obtém o elemento do DOM com ID 'clp1-grid' (ex: uma <div> na interface).
+            const grid = document.getElementById('clp1-grid');
+
+            // Limpa o conteúdo anterior (innerHTML = '') para renderizar os novos dados.
+            grid.innerHTML = '';
+
+            // forEach percorre os 28 valores do array byteArray.
+            byteArray.forEach((val, i) => {
+
+                // Para cada valor (val): Cria um novo elemento <div>.
+                const cell = document.createElement('div');
+                // Adiciona classes CSS:
+                //  cell: define tamanho, margem, borda etc.
+                //  color-0, color-1, color-2 ou color-3: define a cor de fundo com base no valor.
+                cell.classList.add('cell', `color-${val}`);
+                // Adiciona a célula ao container da grade (#clp1-grid).
+                grid.appendChild(cell);
+            });
+        });
+
+        // CLP 2
+        // Escuta eventos SSE (Server-Sent Events) com nome clp2-data.
+        // Rregistra um listener para eventos SSE com o nome clp2-data.
+        eventSource.addEventListener('clp2-data', function (event) {
+            // Quando um evento chega, ele extrai o valor (data.value) 
+            // e coloca esse valor no conteúdo de um elemento HTML com id="clp2".
+            // Converte os dados do evento (que chegam como string JSON) em um objeto JavaScript.
+            const data = JSON.parse(event.data);
+            // Exemplo de dados recebidos:
+            // {
+            //   "clpId": 2,
+            //   "value": 73
+            // }
+            // Seleciona o elemento HTML com o id="clp2".
+            // Substitui o texto do elemento com o valor recebido do backend (data.value).
+            document.getElementById('clp2').textContent = data.value;
+        });
+
+        // CLP 3
+        eventSource.addEventListener('clp3-data', function (event) {
+            const data = JSON.parse(event.data);
+            document.getElementById('clp3').textContent = data.value;
+        });
+
+        // CLP 4
+        eventSource.addEventListener('clp4-data', function (event) {
+
+            // Os dados do evento chegam como string JSON.
+            // convertendo essa string para um objeto JavaScript.
+            // O formato do dado é:
+            // {
+            //  "clpId": 1,
+            //  "value": [0, 1, 2, 0, 3, ..., 1] // tamanho 28
+            // }
+            const data = JSON.parse(event.data);
+
+            // Se data.value já for um array, ele usa diretamente.
+            // Se data.value for uma string JSON representando um array,
+            // ele faz o JSON.parse para transformá-lo em array.
+            // Essa verificação é uma forma segura de lidar com possíveis variações no que o backend envia.
+            const byteArray = Array.isArray(data.value) ? data.value : JSON.parse(data.value);
+
+            // Obtém o elemento do DOM com ID 'clp1-grid' (ex: uma <div> na interface).
+            const grid = document.getElementById('clp4-grid');
+
+            // Limpa o conteúdo anterior (innerHTML = '') para renderizar os novos dados.
+            grid.innerHTML = '';
+
+            // forEach percorre os 28 valores do array byteArray.
+            byteArray.forEach((val, i) => {
+
+                // Para cada valor (val): Cria um novo elemento <div>.
+                const cell = document.createElement('div');
+                // Adiciona classes CSS:
+                //  cell: define tamanho, margem, borda etc.
+                //  color-0, color-1, color-2 ou color-3: define a cor de fundo com base no valor.
+                cell.classList.add('cell','send');
+                // Adiciona a célula ao container da grade (#clp1-grid).
+                cell.innerHTML += 'Pedido:' + `${val}`;
+                grid.appendChild(cell);
+            });
+
+            document.getElementById('clp4').textContent = '-';
+        });
+
+        document.getElementById("clp-write-form").addEventListener("submit", function (e) {
+            e.preventDefault(); // evita recarregar a página
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            fetch('/write-tag', {
+                method: 'POST',
+                body: formData
+            })
+                .then(() => {
+                    // Recarrega o fragmento do formulário (após envio com sucesso)
+                    fetch('/fragmento-formulario')
+                        .then(resp => resp.text())
+                        .then(html => {
+                            document.getElementById("clp-write-container").innerHTML = html;
+                        });
+                })
+        });
+    </script>
+</body>
+
+</html>

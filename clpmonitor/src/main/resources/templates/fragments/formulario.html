@@ -1,0 +1,49 @@
+
+<!-- src/main/resources/templates/fragments/formulario.html -->
+<div th:fragment="clp-write-fragment" class="clp-write-section">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}"> <!-- Importa os estilos -->
+    <h2>Escrever Tag no CLP</h2>
+    <form id="clp-write-form" th:action="@{/write-tag}" th:object="${tag}" method="post">
+        <label>IP do CLP:</label>
+        <input type="text" th:field="*{ip}" required />
+
+        <label>Porta do CLP:</label>
+        <input type="number" th:field="*{port}" required />
+
+        <label>DB (Data Block):</label>
+        <input type="number" th:field="*{db}" required />
+
+        <label>Tipo:</label>
+        <select th:field="*{type}" required>
+            <option value="STRING">String</option>
+            <option value="BLOCK">Block</option>
+            <option value="FLOAT">Float</option>
+            <option value="INTEGER">Integer</option>
+            <option value="BYTE">Byte</option>
+            <option value="BIT">Bit</option>
+        </select>
+
+        <label>Offset:</label>
+        <input type="number" th:field="*{offset}" required />
+
+        <label>Bit Number:</label>
+        <input type="number" th:field="*{bitNumber}" />
+
+        <label>Size:</label>
+        <input type="number" th:field="*{size}" />
+
+        <label>Valor:</label>
+        <input type="text" th:field="*{value}" required />
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <div id="mensagem-tag">
+        <div th:if="${mensagem}" style="color: green;">
+            <p th:text="${mensagem}"></p>
+        </div>
+        <div th:if="${erro}" style="color: red;">
+            <p th:text="${erro}"></p>
+        </div>
+    </div>
+</div>

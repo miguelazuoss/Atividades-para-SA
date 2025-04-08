@@ -1,0 +1,112 @@
+body {
+    display: flex;
+    flex-direction: row;
+    font-family: Arial;
+    margin: 40px;
+    gap: 20px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 400px;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.container1,
+.container2 {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    width: 550px;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(6, 40px);
+    grid-template-rows: repeat(5, 40px);
+    gap: 5px;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #aaa;
+}
+
+#clp4-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-template-rows: repeat(3, 82px);
+    gap: 5px;
+    margin-top: 30px;
+}
+
+
+
+.send{
+    width: 100px;
+    height: 80px;
+}
+
+
+.color-0 {
+    background-color: white;
+}
+
+.color-1 {
+    background-color: black;
+}
+
+.color-2 {
+    background-color: red;
+}
+
+.color-3 {
+    background-color: blue;
+}
+
+.clp-write-section {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    margin-top: 10px;
+    width: 500px;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+}
+
+.clp-write-section h2 {
+    margin-bottom: 10px;
+}
+
+.clp-write-section form {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    gap: 10px;
+}
+
+.clp-write-section label {
+    font-weight: bold;
+}
+
+.clp-write-section input,
+.clp-write-section select,
+.clp-write-section button {
+    padding: 5px;
+}
