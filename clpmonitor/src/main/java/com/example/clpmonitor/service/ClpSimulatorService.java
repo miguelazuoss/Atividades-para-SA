@@ -21,6 +21,12 @@ import jakarta.annotation.PostConstruct;
 @Service
 public class ClpSimulatorService {
 
+    public static byte[] indexColorEst = new byte[28];
+    public Integer indexExpedition;
+
+    public PlcConnector plcEstDb9;
+    public PlcConnector plcExpDb9;
+
     // emitters – Lista de clientes conectados via SSE
     // Guarda todos os clientes que estão conectados e escutando eventos via SSE.
     // CopyOnWriteArrayList é usada para permitir acesso concorrente com
@@ -66,10 +72,26 @@ public class ClpSimulatorService {
     private void sendClp1Update() {
         // Gera uma lista de 28 inteiros entre 0 e 3.
         // Gera uma lista de 28 inteiros entre 0 e 3.
-        Random rand = new Random();
+
+        plcEstDb9 = new PlcConnector("10.74.241.10", 102);
+        try {
+            plcEstDb9.connect();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            indexColorEst = plcEstDb9.readBlock(9, 68, 28);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            System.out.println("Falha");
+
+        }
+
         List<Integer> byteArray = new ArrayList<>();
         for (int i = 0; i < 28; i++) {
-            byteArray.add(rand.nextInt(4)); // 0 a 3
+            int color = (int) indexColorEst[i];
+            byteArray.add(color); // 0 a 3
         }
 
         // Cria um ClpData com id = 1 e envia com o evento "clp1-data".
@@ -77,13 +99,32 @@ public class ClpSimulatorService {
         sendToEmitters("clp1-data", clp1);
     }
 
-        private void sendClp4Update() {
+    private void sendClp4Update() {
+
+        int values[] = new int[12];
+
+        plcExpDb9 = new PlcConnector("10.74.241.40", 102);
+        try {
+            plcExpDb9.connect();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            int j = 0;
+            for (int i = 6; i <= 28; i += 2) {
+                values[j] = plcExpDb9.readInt(9, i);
+                j++;
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            System.out.println("Falha");
+        }
         // Gera uma lista de 28 inteiros entre 0 e 3.
-        // Gera uma lista de 28 inteiros entre 0 e 3.
-        Random rand = new Random();
+        // Gera uma lista de 28 inteiros entre 0 e 3.;
         List<Integer> byteArray = new ArrayList<>();
         for (int i = 0; i < 12; i++) {
-            byteArray.add(rand.nextInt(201)); // 0 a 3
+            byteArray.add(values[i]); // 0 a 3
         }
 
         // Cria um ClpData com id = 1 e envia com o evento "clp1-data".
