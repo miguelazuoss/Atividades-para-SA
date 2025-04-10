@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.example.clpmonitor.model.ClpData;
+import com.example.clpmonitor.plc.PlcConnector;
 
 import jakarta.annotation.PostConstruct;
 
@@ -44,12 +45,14 @@ public class ClpSimulatorService {
     // Define os dois agendamentos de envio de dados simulados:
     public void startSimulation() {
         // Agendamento separado para CLP 1 (800ms)
-        executor.scheduleAtFixedRate(this::sendClp1Update, 0, 3800, TimeUnit.MILLISECONDS);
+        sendClp1Update();
+        sendClp4Update();
+        executor.scheduleAtFixedRate(this::sendClp1Update, 0, 10000, TimeUnit.MILLISECONDS);
 
         // Agendamento para CLPs 2 a 4 (1 segundo)
         executor.scheduleAtFixedRate(this::sendClp2to4Updates, 0, 3, TimeUnit.SECONDS);
 
-        executor.scheduleAtFixedRate(this::sendClp4Update, 0, 3800, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(this::sendClp4Update, 0, 10000, TimeUnit.MILLISECONDS);
     }
 
     // subscribe() – Adiciona cliente à lista de ouvintes SSE

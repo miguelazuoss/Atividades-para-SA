@@ -164,6 +164,7 @@
             grid.innerHTML = '';
 
             // forEach percorre os 28 valores do array byteArray.
+            var contEst = 1;
             byteArray.forEach((val, i) => {
 
                 // Para cada valor (val): Cria um novo elemento <div>.
@@ -173,7 +174,9 @@
                 //  color-0, color-1, color-2 ou color-3: define a cor de fundo com base no valor.
                 cell.classList.add('cell', `color-${val}`);
                 // Adiciona a célula ao container da grade (#clp1-grid).
+                cell.innerHTML += `${contEst}`;
                 grid.appendChild(cell);
+                contEst +=1;
             });
         });
 

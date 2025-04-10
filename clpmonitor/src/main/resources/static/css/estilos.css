@@ -42,6 +42,10 @@ th {
 }
 
 .cell {
+    color: rgb(255, 0, 234);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 40px;
     height: 40px;
     border: 1px solid #aaa;
