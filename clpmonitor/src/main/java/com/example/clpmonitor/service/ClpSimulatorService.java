@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -47,12 +46,7 @@ public class ClpSimulatorService {
         // Agendamento separado para CLP 1 (800ms)
         sendClp1Update();
         sendClp4Update();
-        executor.scheduleAtFixedRate(this::sendClp1Update, 0, 10000, TimeUnit.MILLISECONDS);
-
-        // Agendamento para CLPs 2 a 4 (1 segundo)
-        executor.scheduleAtFixedRate(this::sendClp2to4Updates, 0, 3, TimeUnit.SECONDS);
-
-        executor.scheduleAtFixedRate(this::sendClp4Update, 0, 10000, TimeUnit.MILLISECONDS);
+        sendClp2to4Updates();
     }
 
     // subscribe() – Adiciona cliente à lista de ouvintes SSE

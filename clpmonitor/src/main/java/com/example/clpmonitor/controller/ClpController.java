@@ -75,6 +75,13 @@ public class ClpController {
         return "fragments/formulario :: clp-write-fragment";
     }
 
+    
+    @PostMapping("/updateSimulation")
+    public String startSimulation() {
+        simulatorService.startSimulation();
+        return "redirect:/fragmento-formulario";
+    }
+
     /*
      * Descrição do Funcionamento:
      * 

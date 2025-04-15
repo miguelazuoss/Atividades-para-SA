@@ -97,7 +97,7 @@
         <h2>CLP 1 (Matriz de 28 bytes)</h2>
         <div id="clp1-grid" class="grid"></div>
         
-        <h2>CLP 2 a 4</h2>
+        <h2>CLP 2 a 3</h2>
 
         <table>
             <thead>
@@ -115,14 +115,15 @@
                     <td>CLP 3</td>
                     <td id="clp3">-</td>
                 </tr>
-                <tr>
-                    <td>CLP 4</td>
-                    <td id="clp4">-</td>
-                </tr>
             </tbody>
         </table>
 
+
+        <h2>Expedição - CLP 4</h2>
         <div id="clp4-grid"></div>
+        <button type="button" id="button-update" onclick="iniciarSimulacao()">
+            Atualizar
+        </button>
     </div>
 
 
@@ -231,14 +232,28 @@
             // forEach percorre os 28 valores do array byteArray.
             byteArray.forEach((val, i) => {
 
-                // Para cada valor (val): Cria um novo elemento <div>.
+                // Cria um novo elemento <div> para a célula
                 const cell = document.createElement('div');
-                // Adiciona classes CSS:
-                //  cell: define tamanho, margem, borda etc.
-                //  color-0, color-1, color-2 ou color-3: define a cor de fundo com base no valor.
-                cell.classList.add('cell','send');
-                // Adiciona a célula ao container da grade (#clp1-grid).
-                cell.innerHTML += 'Pedido:' + `${val}`;
+            
+                // Adiciona classes CSS
+                cell.classList.add('cell', 'send');
+            
+                // Formata o valor com 4 dígitos (se for válido)
+                const formatted = val ? val.toString().padStart(4, '0') : "[_]";
+                let valIndex = 0+i;
+                // Define o conteúdo da célula
+                cell.innerHTML += `P${valIndex}:${formatted}`;
+            
+                // Aplica estilos baseados na existência do valor
+                if (val) {
+                    cell.style.color = "red";
+                    cell.style.border = "1px solid red";
+                } else {
+                    cell.style.color = "green";
+                    cell.style.border = "1px solid green";
+                }
+            
+                // Adiciona a célula ao container da grade (#clp1-grid)
                 grid.appendChild(cell);
             });
 
@@ -264,6 +279,12 @@
                         });
                 })
         });
+
+        function iniciarSimulacao() {
+            fetch('/updateSimulation', {
+                method: 'POST'
+            })
+        }
     </script>
 </body>
 

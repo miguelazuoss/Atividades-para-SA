@@ -34,6 +34,15 @@ th {
     border-radius: 10px;
 }
 
+.container1{
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza horizontalmente */
+    justify-content: center;
+    text-align: center;  /* Alinha o texto ao centro */
+    margin-top: 20px;
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(6, 40px);
@@ -42,7 +51,6 @@ th {
 }
 
 .cell {
-    color: rgb(255, 0, 234);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -56,7 +64,6 @@ th {
     grid-template-columns: repeat(4, 100px);
     grid-template-rows: repeat(3, 82px);
     gap: 5px;
-    margin-top: 30px;
 }
 
 
@@ -69,18 +76,26 @@ th {
 
 .color-0 {
     background-color: white;
+    font-weight: bold;
+    color: black;
 }
 
 .color-1 {
     background-color: black;
+    font-weight: bold;
+    color: white;
 }
 
 .color-2 {
     background-color: red;
+    color: white;
+    font-weight: bold;
 }
 
 .color-3 {
     background-color: blue;
+    color: white;
+    font-weight: bold;
 }
 
 .clp-write-section {
@@ -108,6 +123,23 @@ th {
 .clp-write-section label {
     font-weight: bold;
 }
+
+#button-update {
+    background-color: #007BFF; /* azul padrão tipo Bootstrap */
+    color: white;
+    padding: 10px 16px;        /* padding padrão */
+    margin: 20px 0;             /* margin vertical */
+    width: 100%;               /* ocupa toda a largura disponível */
+    border: none;
+    border-radius: 4px;        /* cantos levemente arredondados */
+    cursor: pointer;
+    font-size: 16px;
+    box-sizing: border-box;    /* inclui padding na largura total */
+  }
+  
+  #button-update:hover {
+    background-color: #0056b3; /* tom de azul mais escuro no hover */
+  }
 
 .clp-write-section input,
 .clp-write-section select,
