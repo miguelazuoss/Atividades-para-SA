@@ -248,9 +248,11 @@
                 if (val) {
                     cell.style.color = "red";
                     cell.style.border = "1px solid red";
+                    cell.style.backgroundColor = "rgba(255, 0, 0, 0.2)"; // vermelho com opacidade de 20%
                 } else {
-                    cell.style.color = "green";
+                    cell.style.color = "rgba(0, 128, 0, 1)";
                     cell.style.border = "1px solid green";
+                    cell.style.backgroundColor = "rgba(0, 128, 0, 0.2)"; // verde com opacidade de 20%
                 }
             
                 // Adiciona a célula ao container da grade (#clp1-grid)
@@ -285,6 +287,10 @@
                 method: 'POST'
             })
         }
+
+        window.onload = function () {
+            iniciarSimulacao();
+        };
     </script>
 </body>
 

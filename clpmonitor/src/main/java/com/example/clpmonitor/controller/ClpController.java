@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.example.clpmonitor.model.TagWriteRequest;
+import com.example.clpmonitor.plc.PlcConnector;
 import com.example.clpmonitor.service.ClpSimulatorService;
-import com.example.clpmonitor.util.TagValueParser;
 
 @Controller
 public class ClpController {
@@ -44,30 +44,64 @@ public class ClpController {
         return simulatorService.subscribe();
     }
 
-    @PostMapping("/write-tag")
-    public String writeTag(@ModelAttribute TagWriteRequest request, Model model) {
-        try {
-            Object typedValue = TagValueParser.parseValue(request.getValue(), request.getType());
+@PostMapping("/write-tag")
+public String writeTag(
+        @RequestParam String ip,
+        @RequestParam int port,
+        @RequestParam String type,
+        @RequestParam int db,
+        @RequestParam int offset,
+        @RequestParam(required = false) Integer size,
+        @RequestParam(required = false) Integer bitNumber,
+        @RequestParam String value,
+        Model model) {
 
-            // lógica de escrita no CLP aqui...
-            // Aqui você escreveria no CLP usando IP, DB, Offset etc.
-            // Simulação:
-            System.out.println("\nEscrevendo no CLP: " + request.getIp() + "\n"
-                    + " | DB: " + request.getDb() + "\n"
-                    + " | Offset: " + request.getOffset() + "\n"
-                    + " | Type: " + request.getType() + "\n"
-                    + " | Valor convertido: " + typedValue + "\n");
+    try {
+        PlcConnector plc = new PlcConnector(ip.trim(), port);
+        plc.connect();
 
-            model.addAttribute("message", "Valor escrito com sucesso!");
-        } catch (Exception e) {
-            model.addAttribute("error", "Erro ao escrever valor: " + e.getMessage());
+        boolean success = false;
+
+        switch (type.toUpperCase()) {
+            case "STRING":
+                success = plc.writeString(db, offset, size, value.trim());
+                break;
+            case "BLOCK":
+                byte[] bytes = PlcConnector.hexStringToByteArray(value.trim());
+                success = plc.writeBlock(db, offset, size, bytes);
+                break;
+            case "FLOAT":
+                success = plc.writeFloat(db, offset, Float.parseFloat(value.trim()));
+                break;
+            case "INTEGER":
+                success = plc.writeInt(db, offset, Integer.parseInt(value.trim()));
+                break;
+            case "BYTE":
+                success = plc.writeByte(db, offset, Byte.parseByte(value.trim()));
+                break;
+            case "BIT":
+                if (bitNumber == null) {
+                    throw new IllegalArgumentException("Bit Number é obrigatório para tipo BIT");
+                }
+                success = plc.writeBit(db, offset, bitNumber, Boolean.parseBoolean(value.trim()));
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo não suportado: " + type);
         }
 
-        // ✅ Adiciona de novo o objeto para o formulário não quebrar na volta
-        model.addAttribute("tag", new TagWriteRequest());
+        plc.disconnect();
 
-        return "index";
+        if (success) {
+            model.addAttribute("mensagem", "Escrita no CLP realizada com sucesso!");
+        } else {
+            model.addAttribute("erro", "Erro de escrita no CLP!");
+        }
+    } catch (Exception ex) {
+        model.addAttribute("erro", "Erro: " + ex.getMessage());
     }
+
+    return "clp-write-fragment";
+}
 
     @GetMapping("/fragmento-formulario")
     public String carregarFragmentoFormulario(Model model) {
